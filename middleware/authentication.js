@@ -57,7 +57,7 @@ routes.post("/login", async (req, res) => {
                 if (user_type === 'realtor') { utype_acronym = 'rltr' }
                 if (user_type === 'pitiquer') { utype_acronym = 'ptqr' }
 
-                const checkUser = await get_data_conditions(user_type, [`${utype_acronym}_email`, `${utype_acronym}_pass`], [email, password])
+                const checkUser = await get_data_conditions(user_type, [`${utype_acronym}_email`, `${utype_acronym}_pass`, `${utype_acronym}_status`], [email, password, "active"])
                 if (checkUser) {
                     const user = { name: email }
                     const accessToken = generateAccessToken(user)

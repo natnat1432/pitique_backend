@@ -131,11 +131,12 @@ class RealtorController{
             const rltr_id = req.params.rltr_id
             if (rltr_id != null) {
                 const realtor = await get_data("realtor", "rltr_id", rltr_id)
-                const finalRealtor = realtor.map(({ rltr_pass, ...rest }) => rest)
-                res.status(200).json({ success: true, data: finalRealtor, message: 'Realtor found' })
+                delete realtor.rltr_pass
+
+                res.status(200).json({ success: true, data: realtor, message: 'Realtor found' })
             }
             else {
-                res.status(200).json({ success: false, data: finalRealtor, message: 'Realtor does not exist' })
+                res.status(200).json({ success: false,  message: 'Realtor does not exist' })
             }
 
         } catch (error) {

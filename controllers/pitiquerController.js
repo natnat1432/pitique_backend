@@ -1,5 +1,5 @@
 import { insert_data, get_data, get_all_data, update_data, get_data_conditions, get_active_data} from "../database/database.js"
-import { capitalizeWords, generateRandomPassword } from "../utils/util.js"
+import { capitalizeWords, generateRandomPassword,generatePitiquerPortfolioFolder } from "../utils/util.js"
 import { sendEmail } from "../utils/email-sender.js"
 
 class PitiquerController {
@@ -50,22 +50,23 @@ class PitiquerController {
 
             const checkExisting = await get_data("pitiquer", "ptqr_email", email)
 
-            if (checkExisting !== null) {
+            if (checkExisting) {
                 res.status(200).json({ success: false, message: 'Pitiquer account already exists' })
             }
             else {
 
-
+         
                 const addPitiquer = await insert_data("pitiquer",
                     ["ptqr_fname", "ptqr_mname", "ptqr_lname", "ptqr_email", "ptqr_pass", "ptqr_phone", "ptqr_city", "ptqr_province",
                         "ptqr_isphotog", "ptqr_isphotogedt", "ptqr_isvideog", "ptqr_isvideogedt", "ptqr_isamnty", "ptqr_isamntyedt", "ptqr_status"],
                     [firstname, middlename, lastname, email, password, phone, city, province, isphotog, isphotogedt, isvideog, isvideogedt, isamnty, isamntyedt, status]
                 )
 
-                if (addPitiquer) {
+                if (addPitiquer !== null) {
+                    generatePitiquerPortfolioFolder(email);
                     const sendEm = await sendEmail(email, firstname, password)
                     if (sendEm === true) {
-                        res.status(200).json({ success: true, message: 'Pitiquer account created' })
+                        res.status(200).send({ success: true, message: 'Pitiquer account created' })
                     }
                 }
                 else {
@@ -178,11 +179,11 @@ class PitiquerController {
 
             if (ptqr_id != null) {
                 const pitiquer = await get_data("pitiquer", "ptqr_id", ptqr_id)
-                const finalPitiquer = pitiquer.map(({ ptqr_pass, ...rest }) => rest)
-                res.status(200).json({ success: true, data: finalPitiquer, message: 'Pitiquer found' })
+                delete pitiquer.ptqr_pass
+                res.status(200).json({ success: true, data: pitiquer, message: 'Pitiquer found' })
             }
             else {
-                res.status(200).json({ success: false, data: finalPitiquer, message: 'Missing Pitiquer ID' })
+                res.status(200).json({ success: false, message: 'Missing Pitiquer ID' })
             }
 
 

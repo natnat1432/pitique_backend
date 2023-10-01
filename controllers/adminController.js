@@ -71,7 +71,7 @@ class AdminController {
     async getSingleAdmin(req, res) {
         const admin_id = req.params.admin_id
 
-        if (admin_id != null) {
+        if (admin_id) {
             const admin = await get_data("admin", "admin_id", admin_id)
             delete admin.admin_pass
             res.status(200).json({ success: true, data: admin , message:'admin found'})

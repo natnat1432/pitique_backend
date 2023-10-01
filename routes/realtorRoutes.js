@@ -11,6 +11,7 @@ import { get_data_conditions } from "../database/database.js";
 import cors from "cors"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+import { rimraf } from 'rimraf';
 
 const storage = multer.diskStorage({
     destination: async (req, file, cb) => {
@@ -32,7 +33,38 @@ const storage = multer.diskStorage({
 })
 
 
+const update_storage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+        try {
+            const email = req.body.email
+            const userUploadsDir = path.join('uploads', 'realtor', email)
+
+
+            await rimraf(userUploadsDir, { recursive: false });
+
+          
+            fs.mkdirSync(userUploadsDir, { recursive: true })
+            cb(null, userUploadsDir)
+
+        } catch (error) {
+            cb(error, null)
+        }
+    },
+    filename: async (req, file, cb) => {
+        const email = req.body.email
+        cb(null, `${email}_profile.png`)
+    }
+})
+
+
+
+
+
+
 const profile_upload = multer({ storage: storage })
+const profile_update = multer({ storage: update_storage })
+
+
 routes.post("/", realtorController.createRealtor)
 routes.patch("/", authenticateToken, realtorController.updateRealtor)
 routes.get("/", authenticateToken, realtorController.getActiveRealtors)
@@ -86,5 +118,21 @@ routes.get('/:email/profileimage', (req, res) => {
         });
     }
 });
+
+routes.post("/updateimage", profile_update.single('image'),(req,res) => {
+    const email = req.body.email
+
+    const image = req.file
+
+    if(email === null) res.status(200).json({success:false, message:"Missing email"})
+    if(image === null) res.status(200).json({success:false, message:"Missing image"})
+
+   
+    res.status(200).json({success:true,message:"Image updated"})
+    
+
+  
+
+})
 
 export default routes
