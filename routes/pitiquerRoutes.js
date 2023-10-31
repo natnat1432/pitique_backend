@@ -7,7 +7,7 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import * as path from "path";
 import * as fs from "fs";
-import { get_data_conditions } from "../database/database.js";
+import { get_single_data_conditions } from "../database/database.js";
 import cors from "cors";
 import { rimraf } from "rimraf";
 import { DateTime } from "luxon";
@@ -247,4 +247,22 @@ routes.get("/:email/portfolio/:imagename", (req, res) => {
   }
 });
 
+routes.get("/:ptqr_id/minprice", authenticateToken, pitiqueController.getMinPrice);
+routes.get("/:ptqr_id/rating", authenticateToken, pitiqueController.getRating);
+routes.post("/package", authenticateToken, pitiqueController.createPackage);
+routes.get("/package/:id", authenticateToken, pitiqueController.getPackages);
+routes.get("/package/get/:id", authenticateToken, pitiqueController.getPackage);
+routes.get("/notifications/unread/:ptqr_id", authenticateToken, pitiqueController.getTotalUnreadNotifications);
+routes.get("/notifications/:ptqr_id", authenticateToken, pitiqueController.getAllNotification);
+
+routes.put(
+  "/package/update/:id",
+  authenticateToken,
+  pitiqueController.updatePackage
+);
+routes.delete(
+  "/package/:id",
+  authenticateToken,
+  pitiqueController.deletePackage
+);
 export default routes;

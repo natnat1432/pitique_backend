@@ -7,7 +7,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import * as path from 'path';
 import * as fs from 'fs';
-import { get_data_conditions } from "../database/database.js";
+import { get_single_data_conditions } from "../database/database.js";
 import cors from "cors"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -70,7 +70,8 @@ routes.patch("/", authenticateToken, realtorController.updateRealtor)
 routes.get("/", authenticateToken, realtorController.getActiveRealtors)
 routes.patch("/terminate", authenticateToken,realtorController.terminateRealtor)
 routes.get("/:rltr_id", authenticateToken, realtorController.getSingleRealtor)
-
+routes.get("/notifications/unread/:rltr_id", authenticateToken, realtorController.getTotalUnreadNotifications);
+routes.get("/notifications/:rltr_id", authenticateToken, realtorController.getAllNotification);
 routes.get('/:email/profileimage', (req, res) => {
     const email = req.params.email;
     const imagePath = path.join(__dirname, '..', 'uploads', 'realtor', email);
@@ -129,10 +130,7 @@ routes.post("/updateimage", profile_update.single('image'),(req,res) => {
 
    
     res.status(200).json({success:true,message:"Image updated"})
-    
-
-  
-
 })
 
+routes.post("/book", authenticateToken, realtorController.requestBook);
 export default routes

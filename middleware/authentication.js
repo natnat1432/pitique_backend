@@ -1,7 +1,7 @@
 import express from "express"
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
-import { get_data, get_data_conditions, insert_data, update_data } from '../database/database.js'
+import { get_single_data, get_single_data_conditions, insert_data, update_data } from '../database/database.js'
 
 const routes = express.Router();
 dotenv.config()
@@ -10,7 +10,7 @@ import { DateTime } from 'luxon';
 
 routes.post("/token", async (req, res) => {
     const refreshToken = req.body.refreshToken
-    const checkToken = await get_data('tokens', 'refreshToken', refreshToken)
+    const checkToken = await get_single_data('tokens', 'refreshToken', refreshToken)
     if (refreshToken === null) return res.status(401).json({ success: false, valid: false, message: 'No token included' })
     if (!checkToken || checkToken.status === 'expired') return res.status(403).json({ success: false, valid: false, message: 'Token not found' })
 
@@ -57,7 +57,7 @@ routes.post("/login", async (req, res) => {
                 if (user_type === 'realtor') { utype_acronym = 'rltr' }
                 if (user_type === 'pitiquer') { utype_acronym = 'ptqr' }
 
-                const checkUser = await get_data_conditions(user_type, [`${utype_acronym}_email`, `${utype_acronym}_pass`, `${utype_acronym}_status`], [email, password, "active"])
+                const checkUser = await get_single_data_conditions(user_type, [`${utype_acronym}_email`, `${utype_acronym}_pass`, `${utype_acronym}_status`], [email, password, "active"])
                 if (checkUser) {
                     const user = { name: email }
                     const accessToken = generateAccessToken(user)
@@ -103,7 +103,7 @@ routes.post("/login", async (req, res) => {
 
 routes.delete('/logout', async (req, res) => {
     const refreshToken = req.headers['token']
-    const checkToken = await get_data('tokens', 'refreshToken', refreshToken)
+    const checkToken = await get_single_data('tokens', 'refreshToken', refreshToken)
     let now = DateTime.now().setZone('Asia/Manila')
     now = now.toFormat('yyyy-MM-dd HH:mm:ss')
     if (checkToken) {

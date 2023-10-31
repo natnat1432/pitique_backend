@@ -1,4 +1,4 @@
-import { insert_data, get_data, get_all_data, update_data } from "../database/database.js"
+import { insert_data, get_single_data, get_all_data, update_data } from "../database/database.js"
 import { capitalizeWords, generateRandomPassword } from "../utils/util.js"
 import { sendEmail } from "../utils/email-sender.js"
 class AdminController {
@@ -16,7 +16,7 @@ class AdminController {
             lastname = capitalizeWords(lastname)
             const password = generateRandomPassword()
 
-            const checkExisting = await get_data("admin", "admin_email", email)
+            const checkExisting = await get_single_data("admin", "admin_email", email)
 
             if (checkExisting !== null) {
                 res.status(400).json({ success: false, message: 'Account already exists' })
@@ -72,7 +72,7 @@ class AdminController {
         const admin_id = req.params.admin_id
 
         if (admin_id) {
-            const admin = await get_data("admin", "admin_id", admin_id)
+            const admin = await get_single_data("admin", "admin_id", admin_id)
             delete admin.admin_pass
             res.status(200).json({ success: true, data: admin , message:'admin found'})
         }

@@ -7,7 +7,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import * as path from 'path'; 
 import * as fs from 'fs';      
-import { get_data_conditions } from "../database/database.js";
+import { get_single_data_conditions } from "../database/database.js";
 import cors from "cors"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
     destination: async(req,file,cb) => {
         try{
             const email  = req.body.email
-            // const user = await get_data_conditions('admin', ['admin_email'], [email])
+            // const user = await get_single_data_conditions('admin', ['admin_email'], [email])
 
             // if(user){
                 const userUploadsDir = path.join('uploads','admin',email)
@@ -34,7 +34,7 @@ const storage = multer.diskStorage({
     },
     filename: async (req,file,cb) => {
         const email  = req.body.email
-        // const user = await get_data_conditions('admin', ['admin_email'], [email])
+        // const user = await get_single_data_conditions('admin', ['admin_email'], [email])
 
         // if(user){
             cb(null,`${email}_profile.${file.originalname.split('.'[1])}`)
